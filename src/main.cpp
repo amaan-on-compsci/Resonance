@@ -4,43 +4,60 @@
 #include <stdio.h>
 #include "AudioFile.h"
 
-int main(int argc, char** argv)
-{
+int main(int argc, char* argv[]) {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_Log("SDL initialization failed: %s", SDL_GetError());
-        return -1;
+        std::cerr << "SDL Initialization Error: " << SDL_GetError() << std::endl;
+        return 1;
     }
-    // Create a window
+
+    // Create a resizable window
     SDL_Window* window = SDL_CreateWindow(
-        "SDL Window",
-        800, // Width
-        600, // Height
-        SDL_WINDOW_RESIZABLE |
-        SDL_WINDOW_MAXIMIZED
+        "Waveform Visualizer",
+        1000, 900,
+        SDL_WINDOW_RESIZABLE
     );
 
     if (!window) {
-        SDL_Log("Failed to create window: %s", SDL_GetError());
-        return -1;
+        std::cerr << "Window Creation Error: " << SDL_GetError() << std::endl;
+        return 1;
     }
 
-    // Event loop
-    bool quit = false;
-    while (!quit) {
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_EVENT_QUIT) {
-                quit = true;
+    // Create a renderer
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL, SDL_RENDERER_ACCELERATED);
+
+    if (!renderer) {
+        std::cerr << "Renderer Creation Error: " << SDL_GetError() << std::endl;
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Set the initial background color (dark mode)
+    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
+
+    bool running = true;
+    while (running) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_EVENT_QUIT) {
+                running = false;
+            }
+            else if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST) {
+                if (event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+                    // Handle window resize
+                    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+                    SDL_RenderClear(renderer);
+                    SDL_RenderPresent(renderer);
+                }
             }
         }
-
-        // Render your content here
-        // SDL_RenderClear(renderer); // If you want to clear the window
-        // SDL_RenderPresent(renderer); // If you want to update the window
     }
 
-    // Cleanup and quit
+    // Cleanup and exit
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 

@@ -7,7 +7,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_HOME_DIRECTORY}/include
         ${CMAKE_HOME_DIRECTORY}/vendor/SDL/include
         ${CMAKE_HOME_DIRECTORY}/vendor/AudioFile
-        ${CMAKE_HOME_DIRECTORY}/vendor/libsndfile/include
+        ${CMAKE_HOME_DIRECTORY}/vendor/wxWidgets
 )
 target_sources(${PROJECT_NAME} 
     PUBLIC 
