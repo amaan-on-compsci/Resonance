@@ -15,6 +15,9 @@ target_sources(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC
-        ${CMAKE_HOME_DIRECTORY}/vendor
         SDL3::SDL3
+        wx::net
+        wx::core
+        wx::base
 )
+

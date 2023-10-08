@@ -1,32 +1,36 @@
 #include <iostream>
 #include <SDL3/SDL.h>
-#include <sndfile.hh>
 #include <stdio.h>
+#include <wx/wx.h>
+#include <wx/filedlg.h>
 #include "AudioFile.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
         std::cerr << "SDL Initialization Error: " << SDL_GetError() << std::endl;
         return 1;
     }
 
     // Create a resizable window
-    SDL_Window* window = SDL_CreateWindow(
+    SDL_Window *window = SDL_CreateWindow(
         "Waveform Visualizer",
         1000, 900,
-        SDL_WINDOW_RESIZABLE
-    );
+        SDL_WINDOW_RESIZABLE);
 
-    if (!window) {
+    if (!window)
+    {
         std::cerr << "Window Creation Error: " << SDL_GetError() << std::endl;
         return 1;
     }
 
     // Create a renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL, SDL_RENDERER_ACCELERATED);
 
-    if (!renderer) {
+    if (!renderer)
+    {
         std::cerr << "Renderer Creation Error: " << SDL_GetError() << std::endl;
         SDL_DestroyWindow(window);
         SDL_Quit();
@@ -39,14 +43,19 @@ int main(int argc, char* argv[]) {
     SDL_RenderPresent(renderer);
 
     bool running = true;
-    while (running) {
+    while (running)
+    {
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_EVENT_QUIT) {
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_EVENT_QUIT)
+            {
                 running = false;
             }
-            else if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST) {
-                if (event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+            else if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
+            {
+                if (event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED)
+                {
                     // Handle window resize
                     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
                     SDL_RenderClear(renderer);
