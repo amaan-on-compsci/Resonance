@@ -1,350 +1,45 @@
-// // #include <iostream>
-// // #include <SDL3/SDL.h>
-// // #include <stdio.h>
-// // #include <wx/wx.h>
-// // #include <wx/filedlg.h>
-// // #include "AudioFile.h"
-
-// // int main(int argc, char *argv[])
-// // {
-// //     // Initialize SDL
-// //     if (SDL_Init(SDL_INIT_VIDEO) < 0)
-// //     {
-// //         std::cerr << "SDL Initialization Error: " << SDL_GetError() << std::endl;
-// //         return 1;
-// //     }
-
-// //     // Create a resizable window
-// //     SDL_Window *window = SDL_CreateWindow(
-// //         "Waveform Visualizer",
-// //         1000, 900,
-// //         SDL_WINDOW_RESIZABLE);
-
-// //     if (!window)
-// //     {
-// //         std::cerr << "Window Creation Error: " << SDL_GetError() << std::endl;
-// //         return 1;
-// //     }
-
-// //     // Create a renderer
-// //     SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL, SDL_RENDERER_ACCELERATED);
-
-// //     if (!renderer)
-// //     {
-// //         std::cerr << "Renderer Creation Error: " << SDL_GetError() << std::endl;
-// //         SDL_DestroyWindow(window);
-// //         SDL_Quit();
-// //         return 1;
-// //     }
-
-// //     // Set the initial background color (dark mode)
-// //     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-// //     SDL_RenderClear(renderer);
-// //     SDL_RenderPresent(renderer);
-
-// //     bool running = true;
-// //     while (running)
-// //     {
-// //         SDL_Event event;
-// //         while (SDL_PollEvent(&event))
-// //         {
-// //             if (event.type == SDL_EVENT_QUIT)
-// //             {
-// //                 running = false;
-// //             }
-// //             else if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
-// //             {
-// //                 if (event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED)
-// //                 {
-// //                     // Handle window resize
-// //                     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-// //                     SDL_RenderClear(renderer);
-// //                     SDL_RenderPresent(renderer);
-// //                 }
-// //             }
-// //         }
-// //     }
-
-// //     // Cleanup and exit
-// //     SDL_DestroyRenderer(renderer);
-// //     SDL_DestroyWindow(window);
-// //     SDL_Quit();
-
-// //     return 0;
-// // }
-// #include <iostream>
-// #include <SDL3/SDL.h>
-// #include <wx/wx.h>
-// #include <wx/filedlg.h>
-// #include "AudioFile.h"
-
-// // Declare a custom wxWidgets frame class
-// class MyFrame : public wxFrame
-// {
-// public:
-//     MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
-//     // SDL_Renderer* getFrameRenderer() {return sdlRenderer;}
-//     // SDL_Window* getFrameWindow() {return sdlWindow;}
-// private:
-//     void OnOpenFile(wxCommandEvent& event);
-    
-//     wxPanel* panel;
-//     wxButton* openButton;
-//     // SDL_Window* sdlWindow;
-//     // SDL_Renderer* sdlRenderer;
-// };
-
-// MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-//     : wxFrame(NULL, wxID_ANY, title, pos, size)
-// {
-//     // Create a panel to host SDL rendering
-//     panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE);
-
-//     // Create an "Open File" button
-//     openButton = new wxButton(this, wxID_ANY, "Choose File", wxDefaultPosition, wxDefaultSize, wxCENTER);
-//     openButton->Bind(wxEVT_BUTTON, &MyFrame::OnOpenFile, this);
-
-//     // // Initialize SDL
-//     // if (SDL_Init(SDL_INIT_VIDEO) < 0)
-//     // {
-//     //     std::cerr << "SDL Initialization Error: " << SDL_GetError() << std::endl;
-//     //     return;
-//     // }
-
-//     // // Create an SDL window within the panel
-//     // sdlWindow = SDL_CreateWindowFrom(panel->GetHWND());
-//     // if (!sdlWindow)
-//     // {
-//     //     std::cerr << "SDL Window Creation Error: " << SDL_GetError() << std::endl;
-//     //     return;
-//     // }
-
-//     // // Create an SDL renderer
-//     // sdlRenderer = SDL_CreateRenderer(sdlWindow, NULL, SDL_RENDERER_ACCELERATED);
-//     // if (!sdlRenderer)
-//     // {
-//     //     std::cerr << "SDL Renderer Creation Error: " << SDL_GetError() << std::endl;
-//     //     return;
-//     // }
-
-//     // Set the initial background color (dark mode)
-// //    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-// //    SDL_RenderClear(sdlRenderer);
-// //    SDL_RenderPresent(sdlRenderer);
-// }
-
-// void MyFrame::OnOpenFile(wxCommandEvent& event)
-// {
-//     // Create a file dialog to choose a .wav file
-//     wxFileDialog openFileDialog(this, "Open .wav File", "", "", "WAV files (*.wav)|*.wav", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-//     if (openFileDialog.ShowModal() == wxID_CANCEL)
-//         return;
-
-//     wxString selectedFile = openFileDialog.GetPath();
-//     // Here you can open the selected .wav file using AudioFile or your audio processing logic.
-
-//     // Example:
-//     // AudioFile audioFile;
-//     // audioFile.load(selectedFile.ToStdString());
-
-//     // Update your SDL rendering or audio processing with the loaded file.
-
-//     // Display the selected file path
-//     wxMessageBox("Selected File: " + selectedFile, "File Selected", wxOK | wxICON_INFORMATION, this);
-// }
-
-// int main(int argc, char* argv[])
-// {
-//     // Initialize wxWidgets
-//     wxApp::SetInstance(new wxApp);
-//     wxEntryStart(argc, argv);
-//     wxTheApp->OnInit();
-
-//     // Create the custom frame
-//     MyFrame* frame = new MyFrame("Waveform Visualizer", wxDefaultPosition, wxSize(1000, 900));
-//     frame->Show(true);
-
-//     // Start the wxWidgets event loop
-//     wxTheApp->MainLoop();
-
-//     // Cleanup and exit
-// //    SDL_DestroyRenderer(frame->getFrameRenderer());
-//     // SDL_DestroyWindow(frame->getFrameWindow());
-//     // SDL_Quit();
-
-//     return 0;
-// }
-// #include <iostream>
-// #include <SDL3/SDL.h>
-// #include <stdio.h>
-// #include <wx/wx.h>
-// #include <wx/filedlg.h>
-// #include "AudioFile.h"
-
-// int main(int argc, char *argv[])
-// {
-//     // Initialize SDL
-//     if (SDL_Init(SDL_INIT_VIDEO) < 0)
-//     {
-//         std::cerr << "SDL Initialization Error: " << SDL_GetError() << std::endl;
-//         return 1;
-//     }
-
-//     // Create a resizable window
-//     SDL_Window *window = SDL_CreateWindow(
-//         "Waveform Visualizer",
-//         1000, 900,
-//         SDL_WINDOW_RESIZABLE);
-
-//     if (!window)
-//     {
-//         std::cerr << "Window Creation Error: " << SDL_GetError() << std::endl;
-//         return 1;
-//     }
-
-//     // Create a renderer
-//     SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL, SDL_RENDERER_ACCELERATED);
-
-//     if (!renderer)
-//     {
-//         std::cerr << "Renderer Creation Error: " << SDL_GetError() << std::endl;
-//         SDL_DestroyWindow(window);
-//         SDL_Quit();
-//         return 1;
-//     }
-
-//     // Set the initial background color (dark mode)
-//     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-//     SDL_RenderClear(renderer);
-//     SDL_RenderPresent(renderer);
-
-//     bool running = true;
-//     while (running)
-//     {
-//         SDL_Event event;
-//         while (SDL_PollEvent(&event))
-//         {
-//             if (event.type == SDL_EVENT_QUIT)
-//             {
-//                 running = false;
-//             }
-//             else if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
-//             {
-//                 if (event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED)
-//                 {
-//                     // Handle window resize
-//                     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-//                     SDL_RenderClear(renderer);
-//                     SDL_RenderPresent(renderer);
-//                 }
-//             }
-//         }
-//     }
-
-//     // Cleanup and exit
-//     SDL_DestroyRenderer(renderer);
-//     SDL_DestroyWindow(window);
-//     SDL_Quit();
-
-//     return 0;
-// }
-///////////////////////////////////////////////////////////////
-// #include <iostream>
-// #include <SDL3/SDL.h>
-// #include <wx/wx.h>
-// #include <wx/filedlg.h>
-// #include "AudioFile.h"
-
-// // Declare a custom wxWidgets frame class
-// class MyFrame : public wxFrame
-// {
-// public:
-//     MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
-// private:
-//     void OnOpenFile(wxCommandEvent& event);
-    
-//     wxPanel* panel;
-//     wxButton* openButton;
-// };
-
-// MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-//     : wxFrame(NULL, wxID_ANY, title, pos, size)
-// {
-//     // Create a panel to host SDL rendering
-//     panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE);
-
-//     // Create an "Open File" button
-//     openButton = new wxButton(this, wxID_ANY, "Choose File", wxDefaultPosition, wxDefaultSize, wxCENTER);
-//     openButton->Bind(wxEVT_BUTTON, &MyFrame::OnOpenFile, this);
-// }
-
-// void MyFrame::OnOpenFile(wxCommandEvent& event)
-// {
-//     // Create a file dialog to choose a .wav file
-//     wxFileDialog openFileDialog(this, "Open .wav File", "", "", "WAV files (*.wav)|*.wav", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-//     if (openFileDialog.ShowModal() == wxID_CANCEL)
-//         return;
-
-//     wxString selectedFile = openFileDialog.GetPath();
-//     // Here you can open the selected .wav file using AudioFile or your audio processing logic.
-
-//     // Example:
-//     // AudioFile audioFile;
-//     // audioFile.load(selectedFile.ToStdString());
-
-//     // Update your SDL rendering or audio processing with the loaded file.
-
-//     // Display the selected file path
-//     wxMessageBox("Selected File: " + selectedFile, "File Selected", wxOK | wxICON_INFORMATION, this);
-// }
-
-// int main(int argc, char* argv[])
-// {
-//     // Initialize wxWidgets
-//     wxApp::SetInstance(new wxApp);
-//     wxEntryStart(argc, argv);
-//     wxTheApp->OnInit();
-
-//     // Create the custom frame
-//     MyFrame* frame = new MyFrame("Waveform Visualizer", wxDefaultPosition, wxSize(1000, 900));
-//     frame->Show(true);
-
-//     // Start the wxWidgets event loop
-//     wxTheApp->MainLoop();
-
-//     return 0;
-// }
-/////////////////////////////
 #include <iostream>
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include <wx/wx.h>
-#include "AudioFile.h"
 #include <wx/filedlg.h>
+#include <vector>
 
-class MyFrame : public wxFrame
-{
-public:
-    MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
-private:
-    void OnOpenFile(wxCommandEvent& event);
-    void OnPaint(wxPaintEvent& event);
+#include "AudioFile.h"
 
-    wxPanel* panel;
-    wxButton* openButton;
+struct AudioData {
+    std::vector<double> samples;
+    int sampleRate;
+
+    AudioData() : sampleRate(0) {}
 };
 
-MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-    : wxFrame(NULL, wxID_ANY, title, pos, size)
+class MainFrame : public wxFrame
+{
+public:
+    MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
+
+private:
+    void OnOpenFile(wxCommandEvent &event);
+    void OnPaint(wxPaintEvent &event);
+
+    wxPanel *panel;
+    wxButton *openButton;
+    wxStaticText *infoLabel;
+
+    AudioData audioData;
+    bool fileOpened;
+};
+ 
+MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
+    : wxFrame(NULL, wxID_ANY, title, pos, size), fileOpened(false)
 {
     // Create a custom panel to set the background color
     panel = new wxPanel(this, wxID_ANY);
-    panel->Bind(wxEVT_PAINT, &MyFrame::OnPaint, this);
+    panel->Bind(wxEVT_PAINT, &MainFrame::OnPaint, this);
 
     // Create an "Open File" button and center it horizontally
     openButton = new wxButton(panel, wxID_ANY, "Choose File     ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
-    openButton->Bind(wxEVT_BUTTON, &MyFrame::OnOpenFile, this);
+    openButton->Bind(wxEVT_BUTTON, &MainFrame::OnOpenFile, this);
 
     // Set a nicer font and style for the button
     wxFont buttonFont(12, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
@@ -353,7 +48,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     openButton->SetBackgroundColour(*wxBLACK);
 
     // Create a vertical box sizer to center the button vertically
-    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
     mainSizer->AddStretchSpacer();
     mainSizer->Add(openButton, 0, wxALIGN_CENTER);
     mainSizer->AddStretchSpacer();
@@ -362,7 +57,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     panel->SetSizer(mainSizer);
 }
 
-void MyFrame::OnOpenFile(wxCommandEvent& event)
+void MainFrame::OnOpenFile(wxCommandEvent &event)
 {
     // Create a file dialog to choose a .wav file
     wxFileDialog openFileDialog(this, "Open .wav File", "", "", "WAV files (*.wav)|*.wav", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -371,28 +66,120 @@ void MyFrame::OnOpenFile(wxCommandEvent& event)
         return;
 
     wxString selectedFile = openFileDialog.GetPath();
-    // Here you can open the selected .wav file using AudioFile or your audio processing logic.
 
-    // Example:
-    // AudioFile audioFile;
-    // audioFile.load(selectedFile.ToStdString());
+    // Load the selected .wav file using AudioFile
+    AudioFile<double> audioFile;
+    if (audioFile.load(selectedFile.ToStdString()))
+    {
+        // Extract audio data
+        audioData.samples = audioFile.samples[0];
+        audioData.sampleRate = audioFile.getSampleRate();
 
-    // Update your SDL rendering or audio processing with the loaded file.
+        // Set the fileOpened flag to true
+        fileOpened = true;
 
-    // Display the selected file path
-    wxMessageBox("Selected File: " + selectedFile, "File Selected", wxOK | wxICON_INFORMATION, this);
+        // Remove the "Choose File" button from the layout
+        openButton->Destroy();
+
+        // Create a new "Choose File" button (recurring)
+        openButton = new wxButton(panel, wxID_ANY, " Choose File     ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+        openButton->Bind(wxEVT_BUTTON, &MainFrame::OnOpenFile, this);
+        openButton->SetFont(wxFont(12, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+        openButton->SetForegroundColour(*wxWHITE);
+        openButton->SetBackgroundColour(*wxBLACK);
+
+        // Create a vertical box sizer to center the button vertically (recurring)
+        wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
+        mainSizer->AddStretchSpacer();
+        mainSizer->Add(openButton, 0, wxALIGN_CENTER);
+        mainSizer->AddStretchSpacer();
+
+        // Set the sizer for the custom panel (recurring)
+        panel->SetSizer(mainSizer);
+
+        // Trigger a repaint event to draw the waveform
+        panel->Refresh();
+    }
+    else
+    {
+        wxMessageBox("Error loading the selected .wav file.", "Error", wxOK | wxICON_ERROR, this);
+    }
 }
 
-void MyFrame::OnPaint(wxPaintEvent& event)
+void MainFrame::OnPaint(wxPaintEvent &event)
 {
-    // Custom paint event handler to set the background color
+    // Custom paint event handler to set the background color and draw the waveform
     wxPaintDC dc(panel);
     wxColor bgColor(30, 30, 30); // Dark gray background color
     dc.SetBackground(wxBrush(bgColor));
     dc.Clear();
+
+    // If a file is opened, draw the waveform within a bordered rectangle
+    if (fileOpened)
+    {
+        int width, height;
+        panel->GetClientSize(&width, &height);
+
+        // Define the position and size of the bordered rectangle
+        int rectX = 50;              // X-coordinate of the rectangle
+        int rectY = 50;              // Y-coordinate of the rectangle
+        int rectWidth = width - 100; // Width of the rectangle
+        int rectHeight = height / 2; // Height of the rectangle (top half of the screen)
+
+        // Calculate the center of the rectangle
+        int centerX = rectX + rectWidth / 2;
+
+        // Calculate the vertical center for waveform plotting, keeping it higher
+        int centerY = rectY + rectHeight / 4;
+
+        // Draw the bordered rectangle
+        wxPen borderPen(*wxWHITE, 2); // White pen with 2-pixel width for the border
+        dc.SetPen(borderPen);
+        dc.SetBrush(*wxTRANSPARENT_BRUSH); // No fill, only the border
+
+        dc.DrawRectangle(rectX, rectY, rectWidth, rectHeight);
+
+        // Set the clipping region to the inside of the bordered rectangle
+        wxRect clipRect(rectX + 1, rectY + 1, rectWidth - 2, rectHeight - 2);
+        dc.SetClippingRegion(clipRect);
+
+        // Draw the waveform centered within the rectangle
+        wxPen waveformPen(*wxWHITE, 2); // White pen with 2-pixel width for the waveform
+        dc.SetPen(waveformPen);
+
+        if (!audioData.samples.empty())
+        {
+            int numSamples = audioData.samples.size();
+            double scale = static_cast<double>(rectWidth) / numSamples;
+
+            for (int i = 0; i < numSamples - 1; ++i)
+            {
+                int x1 = static_cast<int>(centerX + (i - numSamples / 2) * scale);
+                int y1 = static_cast<int>(centerY + (audioData.samples[i] + 1.0) * rectHeight / 4); // Adjusted height
+                int x2 = static_cast<int>(centerX + (i + 1 - numSamples / 2) * scale);
+                int y2 = static_cast<int>(centerY + (audioData.samples[i + 1] + 1.0) * rectHeight / 4); // Adjusted height
+
+                dc.DrawLine(x1, y1, x2, y2);
+            }
+        }
+
+        // Reset the clipping region
+        dc.DestroyClippingRegion();
+
+        // Display text with total number of samples and sampling frequency
+        wxString infoText = wxString::Format("  Samples: %d\n  Frequency: %d Hz", static_cast<int>(audioData.samples.size()), audioData.sampleRate);
+
+        // Create a wxStaticText control
+        infoLabel = new wxStaticText(panel, wxID_ANY, infoText, wxPoint(rectX, rectY + rectHeight + 10), wxSize(300, 70));
+        wxFont infoFont(20, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+        infoLabel->SetFont(infoFont);
+        infoLabel->SetBackgroundColour(*wxBLACK);
+        infoLabel->SetForegroundColour(*wxWHITE);
+        infoLabel->SetSize(infoLabel->GetBestSize()); // Make the text sizeable
+    }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     // Initialize wxWidgets
     wxApp::SetInstance(new wxApp);
@@ -400,7 +187,7 @@ int main(int argc, char* argv[])
     wxTheApp->OnInit();
 
     // Create the custom frame
-    MyFrame* frame = new MyFrame("Waveform Visualizer", wxDefaultPosition, wxSize(1000, 900));
+    MainFrame *frame = new MainFrame("Display Waveform", wxDefaultPosition, wxSize(1000, 900));
     frame->Show(true);
 
     // Start the wxWidgets event loop
@@ -408,6 +195,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
-
-
