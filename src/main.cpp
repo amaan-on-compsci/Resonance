@@ -19,47 +19,47 @@ public:
     MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 
 private:
-    void OnOpenFile(wxCommandEvent &event);
-    void OnPaint(wxPaintEvent &event);
+    void FileOpened(wxCommandEvent &event);
+    void Painting(wxPaintEvent &event);
 
     wxPanel *panel;
     wxButton *openButton;
     wxStaticText *infoLabel;
 
-    AudioData audioData;
+    AudioData audioData; // store audio data as a vector of double vectors
     bool fileOpened;
 };
 
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(NULL, wxID_ANY, title, pos, size), fileOpened(false)
 {
-    // Create a custom panel to set the background color
+    // customizable panel for the main frame
     panel = new wxPanel(this, wxID_ANY);
-    panel->Bind(wxEVT_PAINT, &MainFrame::OnPaint, this);
+    panel->Bind(wxEVT_PAINT, &MainFrame::Painting, this);
 
-    // Create an "Open File" button and center it horizontally
+    // use this button to choose a file 
     openButton = new wxButton(panel, wxID_ANY, "Choose File     ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
-    openButton->Bind(wxEVT_BUTTON, &MainFrame::OnOpenFile, this);
+    openButton->Bind(wxEVT_BUTTON, &MainFrame::FileOpened, this);
 
-    // Set a nicer font and style for the button
+    // button customization
     wxFont buttonFont(12, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     openButton->SetFont(buttonFont);
     openButton->SetForegroundColour(*wxWHITE);
     openButton->SetBackgroundColour(*wxBLACK);
 
-    // Create a vertical box sizer to center the button vertically
+    // sizers to align the elements within the panel
     wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
     mainSizer->AddStretchSpacer();
     mainSizer->Add(openButton, 0, wxALIGN_CENTER);
     mainSizer->AddStretchSpacer();
 
-    // Set the sizer for the custom panel
+    // set the position for the panel
     panel->SetSizer(mainSizer);
 }
 
-void MainFrame::OnOpenFile(wxCommandEvent &event)
+void MainFrame::FileOpened(wxCommandEvent &event)
 {
-    // Create a file dialog to choose a .wav file
+    // open a file dialog to let the user choose a .wav file
     wxFileDialog openFileDialog(this, "Open .wav File", "", "", "WAV files (*.wav)|*.wav", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
     if (openFileDialog.ShowModal() == wxID_CANCEL)
@@ -67,41 +67,41 @@ void MainFrame::OnOpenFile(wxCommandEvent &event)
 
     wxString selectedFile = openFileDialog.GetPath();
 
-    // Load the selected .wav file using AudioFile
+    // initialize variable to store and load audio data
     AudioFile<double> audioFile;
     if (audioFile.load(selectedFile.ToStdString()))
     {
-        // Extract audio data for both channels
-        audioData.samples.clear(); // Clear any existing data
+        // extract audio for both channels
+        audioData.samples.clear(); // clear old data
         for (int channel = 0; channel < audioFile.getNumChannels(); ++channel)
         {
             audioData.samples.push_back(audioFile.samples[channel]);
         }
         audioData.sampleRate = audioFile.getSampleRate();
 
-        // Set the fileOpened flag to true
+        // to track the status of opened file, update fileOpened
         fileOpened = true;
 
-        // Remove the "Choose File" button from the layout
+        // get rid of the choose file button
         openButton->Destroy();
 
-        // Create a new "Choose File" button (recurring)
+        // =create another button to be used for the next file from the user
         openButton = new wxButton(panel, wxID_ANY, "   Choose File    ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
-        openButton->Bind(wxEVT_BUTTON, &MainFrame::OnOpenFile, this);
+        openButton->Bind(wxEVT_BUTTON, &MainFrame::FileOpened, this);
         openButton->SetFont(wxFont(12, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
         openButton->SetForegroundColour(*wxWHITE);
         openButton->SetBackgroundColour(*wxBLACK);
 
-        // Create a vertical box sizer to center the button vertically (recurring)
+        // align the new button
         wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
         mainSizer->AddStretchSpacer();
         mainSizer->Add(openButton, 0, wxALIGN_CENTER);
         mainSizer->AddStretchSpacer();
 
-        // Set the sizer for the custom panel (recurring)
+        // align panel
         panel->SetSizer(mainSizer);
 
-        // Trigger a repaint event to draw the waveform
+        // draw waveform by repainting panel
         panel->Refresh();
     }
     else
@@ -110,47 +110,47 @@ void MainFrame::OnOpenFile(wxCommandEvent &event)
     }
 }
 
-void MainFrame::OnPaint(wxPaintEvent &event)
+void MainFrame::Painting(wxPaintEvent &event)
 {
-    // Custom paint event handler to set the background color and draw the waveforms
+    // paint event handler to draw waveform
     wxPaintDC dc(panel);
-    wxColor bgColor(30, 30, 30); // Dark gray background color
+    wxColor bgColor(30, 30, 30); //set panel bg color
     dc.SetBackground(wxBrush(bgColor));
     dc.Clear();
 
-    // If a file is opened, draw the waveforms within a bordered rectangle
+    // when the file is opened, create a rectangle to draw the waveforms in
     if (fileOpened)
     {
         int width, height;
         panel->GetClientSize(&width, &height);
 
-        // Define the position and size of the bordered rectangle
-        int rectX = 50;                // X-coordinate of the rectangle
-        int rectY = 50;                // Y-coordinate of the rectangle
-        int rectWidth = width - 100;   // Width of the rectangle
-        int rectHeight = height - 300; // Height of the rectangle
+        // positioning for rectangular frame within panel
+        int rectX = 50;                // x coordinate for rectangle
+        int rectY = 50;                // y coordinate for rectanle
+        int rectWidth = width - 100;   // rectangle width
+        int rectHeight = height - 300; // rectangle height
 
-        // Calculate the center of the rectangle
+        // center of the rectangle
         int centerX = rectX + rectWidth / 2;
 
-        // Calculate the vertical position for waveforms
-        int centerYTop = rectY - rectHeight / 200;  // Position for the top channel
-        int centerYBottom = rectY + rectHeight / 2; // Position for the bottom channel
+        // for vertically placing waveforms
+        int centerYTop = rectY - rectHeight / 200;   
+        int centerYBottom = rectY + rectHeight / 2; 
 
-        // Draw the bordered rectangle
-        wxPen borderPen(*wxWHITE, 2); // White pen with 2-pixel width for the border
+        // draw rectangular frame
+        wxPen borderPen(*wxWHITE, 2); // pen settings for the drawing
         dc.SetPen(borderPen);
-        dc.SetBrush(*wxTRANSPARENT_BRUSH); // No fill, only the border
+        dc.SetBrush(*wxTRANSPARENT_BRUSH); // make sure the rectangle isn't filled
 
         dc.DrawRectangle(rectX, rectY, rectWidth, rectHeight);
 
-        // Set the clipping region to the inside of the bordered rectangle
+        // clipping region restricted to the rectangle
         wxRect clipRect(rectX + 1, rectY + 1, rectWidth - 2, rectHeight - 2);
         dc.SetClippingRegion(clipRect);
 
-        // Draw both waveforms within the rectangle with separation
-        wxPen waveformPen1(*wxWHITE, 2); // White pen with 2-pixel width for the waveform of channel 1
-        wxPen waveformPen2(*wxRED, 2);   // Red pen for the waveform of channel 2
+        // draw both channels
+        wxPen waveformPen1(*wxWHITE, 2); // pen settings for channel 1
+        wxPen waveformPen2(*wxRED, 2);   // pen settings for channel 2
 
         if (!audioData.samples.empty() && audioData.samples.size() >= 2)
         {
@@ -160,27 +160,27 @@ void MainFrame::OnPaint(wxPaintEvent &event)
             for (int i = 0; i < numSamples - 1; ++i)
             {
                 int x1 = static_cast<int>(centerX + (i - numSamples / 2) * scale);
-                int y1_1 = static_cast<int>(centerYTop + (audioData.samples[0][i] + 1.0) * rectHeight / 4); // Adjusted height for top channel
+                int y1_1 = static_cast<int>(centerYTop + (audioData.samples[0][i] + 1.0) * rectHeight / 4); 
                 int x2 = static_cast<int>(centerX + (i + 1 - numSamples / 2) * scale);
-                int y2_1 = static_cast<int>(centerYTop + (audioData.samples[0][i + 1] + 1.0) * rectHeight / 4); // Adjusted height for top channel
+                int y2_1 = static_cast<int>(centerYTop + (audioData.samples[0][i + 1] + 1.0) * rectHeight / 4); 
 
-                int y1_2 = static_cast<int>(centerYBottom + (audioData.samples[1][i] + 1.0) * rectHeight / 4);     // Adjusted height for bottom channel
-                int y2_2 = static_cast<int>(centerYBottom + (audioData.samples[1][i + 1] + 1.0) * rectHeight / 4); // Adjusted height for bottom channel
+                int y1_2 = static_cast<int>(centerYBottom + (audioData.samples[1][i] + 1.0) * rectHeight / 4);     
+                int y2_2 = static_cast<int>(centerYBottom + (audioData.samples[1][i + 1] + 1.0) * rectHeight / 4); 
 
-                // Draw top channel waveform
+                // draw channel 1 line
                 dc.SetPen(waveformPen1);
                 dc.DrawLine(x1, y1_1, x2, y2_1);
 
-                // Draw bottom channel waveform
+                // draw channel 2 line
                 dc.SetPen(waveformPen2);
                 dc.DrawLine(x1, y1_2, x2, y2_2);
             }
         }
 
-        // Reset the clipping region
+        // reset the clipping region, no longer within rectangle
         dc.DestroyClippingRegion();
 
-        // Display text with total number of samples and sampling frequency
+        // display .wav file information
         wxString infoText = wxString::Format("  Samples: %d\n  Frequency: %d Hz", static_cast<int>(audioData.samples[0].size()), audioData.sampleRate);
         wxFont infoFont(20, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
         dc.SetFont(infoFont);
@@ -191,16 +191,16 @@ void MainFrame::OnPaint(wxPaintEvent &event)
 
 int main(int argc, char *argv[])
 {
-    // Initialize wxWidgets
+    // start wxWidgets
     wxApp::SetInstance(new wxApp);
     wxEntryStart(argc, argv);
     wxTheApp->OnInit();
 
-    // Create the custom frame
+    // create the frame
     MainFrame *frame = new MainFrame("Display Waveform", wxDefaultPosition, wxSize(1000, 900));
     frame->Show(true);
 
-    // Start the wxWidgets event loop
+    // start the main event loop
     wxTheApp->MainLoop();
 
     return 0;
