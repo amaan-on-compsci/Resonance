@@ -6,6 +6,8 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC 
         ${CMAKE_HOME_DIRECTORY}/include
         ${CMAKE_HOME_DIRECTORY}/vendor/SDL/include
+        ${CMAKE_HOME_DIRECTORY}/vendor/AudioFile
+        ${CMAKE_HOME_DIRECTORY}/vendor/libsndfile/include
 )
 target_sources(${PROJECT_NAME} 
     PUBLIC 
@@ -14,4 +16,5 @@ target_sources(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC
         ${CMAKE_HOME_DIRECTORY}/vendor
+        SDL3::SDL3
 )

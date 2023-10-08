@@ -9,9 +9,13 @@ set(SDL_STATIC ON)
 
 add_subdirectory(SDL)
 
-# # TinyFileDialogs Flags
-# set(TFD_BUILD_STATIC ON)
-# add_subdirectory(tinyfiledialogs-cmake)
+# libsndfile flags
+set(BUILD_TESTING OFF)
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_PROGRAMS OFF)
+set(BUILD_EXAMPLES OFF)
+add_subdirectory(libsndfile)
+
 
 #Audio File Flags
 set(BUILD_TESTS OFF)
@@ -35,4 +39,5 @@ target_sources(vendor
  target_link_libraries(vendor 
     INTERFACE 
         SDL3::SDL3
+        sndfile
     )
