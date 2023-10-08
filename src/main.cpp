@@ -1,13 +1,13 @@
 #include <iostream>
-#include <SDL.h>
 #include <wx/wx.h>
 #include <wx/filedlg.h>
 #include <vector>
 
 #include "AudioFile.h"
 
-struct AudioData {
-    std::vector<double> samples;
+struct AudioData
+{
+    std::vector<std::vector<double>> samples;
     int sampleRate;
 
     AudioData() : sampleRate(0) {}
@@ -29,7 +29,7 @@ private:
     AudioData audioData;
     bool fileOpened;
 };
- 
+
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(NULL, wxID_ANY, title, pos, size), fileOpened(false)
 {
@@ -71,8 +71,12 @@ void MainFrame::OnOpenFile(wxCommandEvent &event)
     AudioFile<double> audioFile;
     if (audioFile.load(selectedFile.ToStdString()))
     {
-        // Extract audio data
-        audioData.samples = audioFile.samples[0];
+        // Extract audio data for both channels
+        audioData.samples.clear(); // Clear any existing data
+        for (int channel = 0; channel < audioFile.getNumChannels(); ++channel)
+        {
+            audioData.samples.push_back(audioFile.samples[channel]);
+        }
         audioData.sampleRate = audioFile.getSampleRate();
 
         // Set the fileOpened flag to true
@@ -82,7 +86,7 @@ void MainFrame::OnOpenFile(wxCommandEvent &event)
         openButton->Destroy();
 
         // Create a new "Choose File" button (recurring)
-        openButton = new wxButton(panel, wxID_ANY, " Choose File     ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+        openButton = new wxButton(panel, wxID_ANY, "   Choose File    ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
         openButton->Bind(wxEVT_BUTTON, &MainFrame::OnOpenFile, this);
         openButton->SetFont(wxFont(12, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
         openButton->SetForegroundColour(*wxWHITE);
@@ -108,29 +112,30 @@ void MainFrame::OnOpenFile(wxCommandEvent &event)
 
 void MainFrame::OnPaint(wxPaintEvent &event)
 {
-    // Custom paint event handler to set the background color and draw the waveform
+    // Custom paint event handler to set the background color and draw the waveforms
     wxPaintDC dc(panel);
     wxColor bgColor(30, 30, 30); // Dark gray background color
     dc.SetBackground(wxBrush(bgColor));
     dc.Clear();
 
-    // If a file is opened, draw the waveform within a bordered rectangle
+    // If a file is opened, draw the waveforms within a bordered rectangle
     if (fileOpened)
     {
         int width, height;
         panel->GetClientSize(&width, &height);
 
         // Define the position and size of the bordered rectangle
-        int rectX = 50;              // X-coordinate of the rectangle
-        int rectY = 50;              // Y-coordinate of the rectangle
-        int rectWidth = width - 100; // Width of the rectangle
-        int rectHeight = height / 2; // Height of the rectangle (top half of the screen)
+        int rectX = 50;                // X-coordinate of the rectangle
+        int rectY = 50;                // Y-coordinate of the rectangle
+        int rectWidth = width - 100;   // Width of the rectangle
+        int rectHeight = height - 300; // Height of the rectangle
 
         // Calculate the center of the rectangle
         int centerX = rectX + rectWidth / 2;
 
-        // Calculate the vertical center for waveform plotting, keeping it higher
-        int centerY = rectY + rectHeight / 4;
+        // Calculate the vertical position for waveforms
+        int centerYTop = rectY - rectHeight / 200;  // Position for the top channel
+        int centerYBottom = rectY + rectHeight / 2; // Position for the bottom channel
 
         // Draw the bordered rectangle
         wxPen borderPen(*wxWHITE, 2); // White pen with 2-pixel width for the border
@@ -143,23 +148,32 @@ void MainFrame::OnPaint(wxPaintEvent &event)
         wxRect clipRect(rectX + 1, rectY + 1, rectWidth - 2, rectHeight - 2);
         dc.SetClippingRegion(clipRect);
 
-        // Draw the waveform centered within the rectangle
-        wxPen waveformPen(*wxWHITE, 2); // White pen with 2-pixel width for the waveform
-        dc.SetPen(waveformPen);
+        // Draw both waveforms within the rectangle with separation
+        wxPen waveformPen1(*wxWHITE, 2); // White pen with 2-pixel width for the waveform of channel 1
+        wxPen waveformPen2(*wxRED, 2);   // Red pen for the waveform of channel 2
 
-        if (!audioData.samples.empty())
+        if (!audioData.samples.empty() && audioData.samples.size() >= 2)
         {
-            int numSamples = audioData.samples.size();
+            int numSamples = audioData.samples[0].size();
             double scale = static_cast<double>(rectWidth) / numSamples;
 
             for (int i = 0; i < numSamples - 1; ++i)
             {
                 int x1 = static_cast<int>(centerX + (i - numSamples / 2) * scale);
-                int y1 = static_cast<int>(centerY + (audioData.samples[i] + 1.0) * rectHeight / 4); // Adjusted height
+                int y1_1 = static_cast<int>(centerYTop + (audioData.samples[0][i] + 1.0) * rectHeight / 4); // Adjusted height for top channel
                 int x2 = static_cast<int>(centerX + (i + 1 - numSamples / 2) * scale);
-                int y2 = static_cast<int>(centerY + (audioData.samples[i + 1] + 1.0) * rectHeight / 4); // Adjusted height
+                int y2_1 = static_cast<int>(centerYTop + (audioData.samples[0][i + 1] + 1.0) * rectHeight / 4); // Adjusted height for top channel
 
-                dc.DrawLine(x1, y1, x2, y2);
+                int y1_2 = static_cast<int>(centerYBottom + (audioData.samples[1][i] + 1.0) * rectHeight / 4);     // Adjusted height for bottom channel
+                int y2_2 = static_cast<int>(centerYBottom + (audioData.samples[1][i + 1] + 1.0) * rectHeight / 4); // Adjusted height for bottom channel
+
+                // Draw top channel waveform
+                dc.SetPen(waveformPen1);
+                dc.DrawLine(x1, y1_1, x2, y2_1);
+
+                // Draw bottom channel waveform
+                dc.SetPen(waveformPen2);
+                dc.DrawLine(x1, y1_2, x2, y2_2);
             }
         }
 
@@ -167,15 +181,11 @@ void MainFrame::OnPaint(wxPaintEvent &event)
         dc.DestroyClippingRegion();
 
         // Display text with total number of samples and sampling frequency
-        wxString infoText = wxString::Format("  Samples: %d\n  Frequency: %d Hz", static_cast<int>(audioData.samples.size()), audioData.sampleRate);
-
-        // Create a wxStaticText control
-        infoLabel = new wxStaticText(panel, wxID_ANY, infoText, wxPoint(rectX, rectY + rectHeight + 10), wxSize(300, 70));
+        wxString infoText = wxString::Format("  Samples: %d\n  Frequency: %d Hz", static_cast<int>(audioData.samples[0].size()), audioData.sampleRate);
         wxFont infoFont(20, wxROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-        infoLabel->SetFont(infoFont);
-        infoLabel->SetBackgroundColour(*wxBLACK);
-        infoLabel->SetForegroundColour(*wxWHITE);
-        infoLabel->SetSize(infoLabel->GetBestSize()); // Make the text sizeable
+        dc.SetFont(infoFont);
+        dc.SetTextForeground(*wxWHITE);
+        dc.DrawText(infoText, rectX, rectY + rectHeight + 10);
     }
 }
 
