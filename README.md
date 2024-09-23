@@ -1,6 +1,6 @@
 # Resonance - Visualize Audio Waveforms from WAV Files
 
-DisplayWaveform is a GUI-based application designed to read and visualize .wav audio files by plotting the waveform of each audio channel. This tool provides a clear graphical representation of the waveforms, making it easier to analyze the amplitude and structure of the audio file across multiple channels.
+Resonance is a GUI-based application designed to read and visualize .wav audio files by plotting the waveform of each audio channel. This tool provides a clear graphical representation of the waveforms, making it easier to analyze the amplitude and structure of the audio file across multiple channels.
 
 Developed using C++ and the wxWidgets library, the application offers an intuitive interface for loading .wav files and automatically rendering the waveforms for each channel in a clean, visually appealing way.
 
