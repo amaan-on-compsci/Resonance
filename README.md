@@ -19,10 +19,12 @@ Customizable GUI: Uses wxWidgets for a highly customizable and responsive graphi
 
 Technologies Used:
 C++: Core programming language for implementing audio data handling and GUI interaction.
+
 wxWidgets: Cross-platform GUI toolkit for creating the application's user interface and handling file dialogs, button interactions, and drawing.
+
 AudioFile: An external library for loading and processing .wav audio files.
 
-# How to Build/Run:
+# How to Build/Run (How I last did it):
 
 Clone this repository, install wxWidgets (initialize submodules if needed), create a build directory and configure the project with CMake:
 
